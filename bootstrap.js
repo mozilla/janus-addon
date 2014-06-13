@@ -1,124 +1,50 @@
 const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
 
+Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Prompt.jsm");
 
-// An example of how to create a string bundle for localization.
-XPCOMUtils.defineLazyGetter(this, "Strings", function() {
-  return Services.strings.createBundle("chrome://skeleton/locale/skeleton.properties");
-});
+const ADDON_ID = "gonzales@mozilla.org";
 
-// An example of how to import a helper module.
-XPCOMUtils.defineLazyGetter(this, "Helper", function() {
-  let sandbox = {};
-  Services.scriptloader.loadSubScript("chrome://skeleton/content/helper.js", sandbox);
-  return sandbox["Helper"];
-});
-
-function isNativeUI() {
-  return (Services.appinfo.ID == "{aa3c5121-dab2-40e2-81ca-7ea25febc110}");
+function setEnabled(enabled) {
+  console.log("SNORP: setting gonzales enabled: " + enabled);
+  // Set prefs
 }
 
-function showToast(aWindow) {
-  aWindow.NativeWindow.toast.show(Strings.GetStringFromName("toast.message"), "short");
+function showEnablePrompt() {
+  // let p = new Prompt({
+  //   title: "Enable Gonzales?",
+  //   message: "Do you want to enable the Gonzales proxy server?",
+  //   buttons: ["Yup", "Nope"]
+  // }).show(function (data) {
+  //   setEnabled(data.button == 0);
+  // });
 }
 
-function showDoorhanger(aWindow) {
-  let buttons = [
-    {
-      label: "Button 1",
-      callback: function() {
-        aWindow.NativeWindow.toast.show("Button 1 was tapped", "short");
-      }
-    } , {
-      label: "Button 2",
-      callback: function() {
-        aWindow.NativeWindow.toast.show("Button 2 was tapped", "short");
-      }
-    }];
-
-  aWindow.NativeWindow.doorhanger.show("Showing a doorhanger with two button choices.", "doorhanger-test", buttons);
-}
-
-function copyLink(aWindow, aTarget) {
-  let url = aWindow.NativeWindow.contextmenus._getLinkURL(aTarget);
-  aWindow.NativeWindow.toast.show("Todo: copy > " + url, "short");
-}
-
-var gToastMenuId = null;
-var gDoorhangerMenuId = null;
-var gContextMenuId = null;
-
-function loadIntoWindow(window) {
-  if (!window)
+function observe(doc, topic, id) {
+  if (id != ADDON_ID) {
     return;
-
-  if (isNativeUI()) {
-    gToastMenuId = window.NativeWindow.menu.add("Show Toast", null, function() { showToast(window); });
-    gDoorhangerMenuId = window.NativeWindow.menu.add("Show Doorhanger", null, function() { showDoorhanger(window); });
-    gContextMenuId = window.NativeWindow.contextmenus.add("Copy Link", window.NativeWindow.contextmenus.linkOpenableContext, function(aTarget) { copyLink(window, aTarget); });
   }
+
+  doc.getElementById('enable-setting').addEventListener('preferencechanged', function() {
+    console.log("SNORP: pref changed!");
+  });
 }
-
-function unloadFromWindow(window) {
-  if (!window)
-    return;
-
-  if (isNativeUI()) {
-    window.NativeWindow.menu.remove(gToastMenuId);
-    window.NativeWindow.menu.remove(gDoorhangerMenuId);
-    window.NativeWindow.contextmenus.remove(gContextMenuId);
-  }
-}
-
-
-/**
- * bootstrap.js API
- */
-var windowListener = {
-  onOpenWindow: function(aWindow) {
-    // Wait for the window to finish loading
-    let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-    domWindow.addEventListener("load", function() {
-      domWindow.removeEventListener("load", arguments.callee, false);
-      loadIntoWindow(domWindow);
-    }, false);
-  },
-  
-  onCloseWindow: function(aWindow) {
-  },
-  
-  onWindowTitleChange: function(aWindow, aTitle) {
-  }
-};
 
 function startup(aData, aReason) {
-  // Load into any existing windows
-  let windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    loadIntoWindow(domWindow);
+  switch(aReason) {
+    case ADDON_INSTALL:
+    case ADDON_ENABLE:
+      showEnablePrompt();
+      break;
   }
 
-  // Load into any new windows
-  Services.wm.addListener(windowListener);
+  Services.obs.addObserver(observe, AddonManager.OPTIONS_NOTIFICATION_DISPLAYED, false);
 }
 
 function shutdown(aData, aReason) {
-  // When the application is shutting down we normally don't have to clean
-  // up any UI changes made
-  if (aReason == APP_SHUTDOWN)
-    return;
-
-  // Stop listening for new windows
-  Services.wm.removeListener(windowListener);
-
-  // Unload from any existing windows
-  let windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements()) {
-    let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    unloadFromWindow(domWindow);
-  }
+  Services.obs.removeObserver(observe, AddonManager.OPTIONS_NOTIFICATION_DISPLAYED);
 }
 
 function install(aData, aReason) {
