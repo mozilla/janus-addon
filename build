@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Replace this value with your add-on name
-XPI=youraddon.xpi
+XPI=gonzales.xpi
 
 # Replace this value to push to different release channels.
 # Nightly = org.mozilla.fennec

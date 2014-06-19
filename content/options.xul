@@ -3,8 +3,10 @@
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:html="http://www.w3.org/1999/xhtml">
 
-  <setting id="enable-setting" pref="gonzales.enabled" type="bool" title="Enable Gonzales Proxy"></setting>
+  <setting id="enable-setting" pref="extensions.gonzales.enabled" type="bool" title="Enable Gonzales Proxy"></setting>
 
-  <setting id="ad-setting" pref="gonzales.adblock.enabled" type="bool" title="Enable ad blocking"></setting>
-  <setting id="gifwebm-setting" pref="gonzales.gifwebm.enabled" type="bool" title="Enable GIF -> WebM conversion"></setting>
+  <setting id="url-setting" pref="extensions.gonzales.pac_url" type="string" title="PAC URL"></setting>
+
+  <setting id="ad-setting" pref="extensions.gonzales.adblock.enabled" type="bool" title="Enable ad blocking"></setting>
+  <setting id="gifwebm-setting" pref="extensions.gonzales.gifwebm.enabled" type="bool" title="Enable GIF -> WebM conversion"></setting>
 </vbox>

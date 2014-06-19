@@ -5,8 +5,9 @@
         <em:id>gonzales@mozilla.org</em:id>
         <em:type>2</em:type>
         <em:optionsURL>chrome://gonzales/content/options.xul</em:optionsURL>
+        <em:optionsType>2</em:optionsType>
         <em:name>Proxy Configurator</em:name>
-        <em:version>1.0</em:version>
+        <em:version>1.1</em:version>
         <em:bootstrap>true</em:bootstrap>
         <em:description>Configure your browser to use a SPDY proxy</em:description>
         <em:creator>James Willcox</em:creator>
@@ -20,5 +21,13 @@
             </Description>
         </em:targetApplication>
 
+        <!-- Desktop -->
+        <em:targetApplication>
+            <Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!--Firefox-->
+                <em:minVersion>29.0</em:minVersion>
+                <em:maxVersion>*.*</em:maxVersion>
+            </Description>
+        </em:targetApplication>
     </Description>
 </RDF>
