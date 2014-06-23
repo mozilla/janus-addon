@@ -8,5 +8,5 @@
   <setting id="url-setting" pref="extensions.gonzales.pac_url" type="string" title="PAC URL"></setting>
 
   <setting id="ad-setting" pref="extensions.gonzales.adblock.enabled" type="bool" title="Enable ad blocking"></setting>
-  <setting id="gifwebm-setting" pref="extensions.gonzales.gifwebm.enabled" type="bool" title="Enable GIF -> WebM conversion"></setting>
+  <setting id="gifwebm-setting" pref="extensions.gonzales.gif2video.enabled" type="bool" title="Enable GIF -> Video conversion"></setting>
 </vbox>

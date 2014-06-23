@@ -3,13 +3,15 @@ const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
 Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-//Cu.import("resource://gre/modules/Prompt.jsm");
 Cu.import("resource://gre/modules/Preferences.jsm");
 
 const ADDON_ID = "gonzales@mozilla.org";
 
 const GONZALES_ENABLED_PREF = "extensions.gonzales.enabled";
 const GONZALES_PAC_URL_PREF = "extensions.gonzales.pac_url";
+
+const GONZALES_ADBLOCK_ENABLED_PREF = "extensions.gonzales.adblock.enabled";
+const GONZALES_GIF2VIDEO_ENABLED_PREF = "extensions.gonzales.gif2video.enabled";
 
 const PROXY_AUTOCONFIG_URL_PREF = "network.proxy.autoconfig_url";
 const PROXY_TYPE_PREF = "network.proxy.type";
@@ -37,6 +39,18 @@ function setGonzalesChecked(checked) {
 
 var GonzalesAddon = {
 
+  rebuildHeader: function() {
+    this.header = "";
+
+    if (Preferences.get(GONZALES_ADBLOCK_ENABLED_PREF, false)) {
+      this.header += "+adblock ";
+    }
+
+    if (Preferences.get(GONZALES_GIF2VIDEO_ENABLED_PREF, false)) {
+      this.header += "+gif2video ";
+    }
+  },
+
   applyPrefChanges: function(name) {
     var value = Preferences.get(name);
 
@@ -44,22 +58,41 @@ var GonzalesAddon = {
       console.log("setting gonzales enabled: " + value);
 
       setGonzalesChecked(value);
+      this.enabled = value;
 
       if (value) {
         Preferences.set(PROXY_AUTOCONFIG_URL_PREF, Preferences.get(GONZALES_PAC_URL_PREF));
         Preferences.set(PROXY_TYPE_PREF, PROXY_TYPE);
+        Services.obs.addObserver(GonzalesAddon.observe, "http-on-modify-request", false);
       } else {
         Preferences.reset(PROXY_AUTOCONFIG_URL_PREF);
         Preferences.reset(PROXY_TYPE_PREF);
+
+        try {
+          Services.obs.removeObserver(GonzalesAddon.observe, "http-on-modify-request");
+        } catch(e) {}
       }
+
+      this.rebuildHeader();
     } else if (name === GONZALES_PAC_URL_PREF) {
       Preferences.set(PROXY_AUTOCONFIG_URL_PREF, value);
+    } else if (name === GONZALES_ADBLOCK_ENABLED_PREF ||
+               name === GONZALES_GIF2VIDEO_ENABLED_PREF) {
+      this.rebuildHeader();
     }
   },
 
-  observe: function(subject, topic, name) {
-    this.applyPrefChanges(name);
-  }
+  observe: function(subject, topic, data) {
+    console.log("topic: " + topic);
+    if (topic === "nsPref:changed") {
+      this.applyPrefChanges(data);
+    } else if (topic === "http-on-modify-request") {
+      let channel = subject.QueryInterface(Ci.nsIHttpChannel);
+
+      console.log("X-Gonzales-Options: " + GonzalesAddon.header);
+      channel.setRequestHeader("X-Gonzales-Options", GonzalesAddon.header, false);
+    }
+  },
 }
 
 var gWindows = [];
@@ -118,27 +151,8 @@ var windowListener = {
   }
 };
 
-function showEnablePrompt() {
-  // let p = new Prompt({
-  //   title: "Enable Gonzales?",
-  //   message: "Do you want to enable the Gonzales proxy server?",
-  //   buttons: ["Yup", "Nope"]
-  // }).show(function (data) {
-  //   setEnabled(data.button == 0);
-  // });
-}
-
-// function observe(doc, topic, id) {
-//   if (id != ADDON_ID) {
-//     return;
-//   }
-
-//   doc.getElementById('enable-setting').addEventListener('preferencechanged', function() {
-//     console.log("SNORP: pref changed!");
-//   });
-// }
-
-const OBSERVE_PREFS = [GONZALES_ENABLED_PREF, GONZALES_PAC_URL_PREF];
+const OBSERVE_PREFS = [GONZALES_ENABLED_PREF, GONZALES_PAC_URL_PREF,
+                       GONZALES_ADBLOCK_ENABLED_PREF, GONZALES_GIF2VIDEO_ENABLED_PREF];
 
 function startup(aData, aReason) {
 
@@ -161,7 +175,7 @@ function startup(aData, aReason) {
   // Load into any new windows
   Services.wm.addListener(windowListener);
 
-  console.log("SNORP: startup done");
+  GonzalesAddon.applyPrefChanges(GONZALES_ENABLED_PREF);
 }
 
 function shutdown(aData, aReason) {
@@ -172,8 +186,9 @@ function shutdown(aData, aReason) {
     Preferences.ignore(pref, GonzalesAddon);
   });
 
-  Preferences.set(GONZALES_ENABLED_PREF, false);
-  GonzalesAddon.applyPrefChanges(GONZALES_ENABLED_PREF);
+  // Put proxy prefs back to defaults
+  Preferences.reset(PROXY_AUTOCONFIG_URL_PREF);
+  Preferences.reset(PROXY_TYPE_PREF);
 
   // Stop listening for new windows
   Services.wm.removeListener(windowListener);
