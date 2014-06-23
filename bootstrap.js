@@ -5,6 +5,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Preferences.jsm");
 
+const NS_XUL = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 const ADDON_ID = "gonzales@mozilla.org";
 
 const GONZALES_ENABLED_PREF = "extensions.gonzales.enabled";
@@ -19,21 +20,29 @@ const PROXY_TYPE_PREF = "network.proxy.type";
 const DEFAULT_PROXY_URL = "http://gonzales.allizom.org";
 const PROXY_TYPE = 2;
 
+const GONZALES_MENU_ID = "tools-gonzales-toggle";
+
 function isNativeUI() {
   return (Services.appinfo.ID == "{aa3c5121-dab2-40e2-81ca-7ea25febc110}");
 }
 
-var gMenuId = null;
+var gAndroidMenuId = null;
 
 function setGonzalesChecked(checked) {
-  if (!isNativeUI())
-    return;
-
   let windows = Services.wm.getEnumerator("navigator:browser");
   while (windows.hasMoreElements()) {
-    windows.getNext().NativeWindow.menu.update(gMenuId, {
-      checked: checked
-    });
+    let win = windows.getNext();
+
+    if (isNativeUI()) {
+      win.NativeWindow.menu.update(gAndroidMenuId, {
+        checked: checked
+      });
+    } else {
+      let menuItem = win.document.getElementById(GONZALES_MENU_ID);
+
+      console.log("setting menuitem checked: " + checked);
+      menuItem.setAttribute("checked", checked);
+    }
   }
 }
 
@@ -98,6 +107,7 @@ var GonzalesAddon = {
 var gWindows = [];
 
 function onUseGonzalesClick() {
+  console.log("toggling gonzales");
   var enabled = Preferences.get(GONZALES_ENABLED_PREF);
   enabled = !enabled;
   Preferences.set(GONZALES_ENABLED_PREF, enabled);
@@ -108,16 +118,24 @@ function loadIntoWindow(window) {
     return;
 
   if (isNativeUI()) {
-    gMenuId = window.NativeWindow.menu.add({
+    gAndroidMenuId = window.NativeWindow.menu.add({
       name: 'Use Gonzales',
       checkable: true,
       checked: Preferences.get(GONZALES_ENABLED_PREF),
       parent: window.NativeWindow.menu.toolsMenuID,
       callback: onUseGonzalesClick
     });
-
-    gWindows.push(window);
+  } else {
+    let menuItem = window.document.createElementNS(NS_XUL, "menuitem");
+    menuItem.setAttribute("id", GONZALES_MENU_ID);
+    menuItem.setAttribute("label", "Use Gonzales");
+    menuItem.setAttribute("checked", Preferences.get(GONZALES_ENABLED_PREF));
+    menuItem.setAttribute("class", "menuitem-iconic");
+    menuItem.addEventListener("command", onUseGonzalesClick);
+    window.document.getElementById("menu_ToolsPopup").appendChild(menuItem);
   }
+
+  gWindows.push(window);
 }
 
 function unloadFromWindow(window) {
@@ -125,8 +143,10 @@ function unloadFromWindow(window) {
     return;
 
   if (isNativeUI()) {
-    window.NativeWindow.menu.remove(gMenuId);
-    gMenuId = null;
+    window.NativeWindow.menu.remove(gAndroidMenuId);
+    gAndroidMenuId = null;
+  } else {
+    window.document.getElementById(GONZALES_MENU_ID).remove();
   }
 }
 
