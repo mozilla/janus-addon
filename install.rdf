@@ -2,9 +2,9 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
     <Description about="urn:mozilla:install-manifest">
-        <em:id>gonzales@mozilla.org</em:id>
+        <em:id>janus@mozilla.org</em:id>
         <em:type>2</em:type>
-        <em:optionsURL>chrome://gonzales/content/options.xul</em:optionsURL>
+        <em:optionsURL>chrome://janus/content/options.xul</em:optionsURL>
         <em:optionsType>2</em:optionsType>
         <em:name>Proxy Configurator</em:name>
         <em:version>1.1</em:version>

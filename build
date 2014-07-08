@@ -1,6 +1,6 @@
 #!/bin/bash
 
-XPI=gonzales.xpi
+XPI=janus.xpi
 
 # Replace this value to push to different release channels.
 # Nightly = org.mozilla.fennec
