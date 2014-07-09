@@ -49,13 +49,15 @@ var ProxyAddon = {
   rebuildHeader: function() {
     this.header = "";
 
-    if (Preferences.get(JANUS_ADBLOCK_ENABLED_PREF, false)) {
-      this.header += "+adblock ";
-    }
+    var features = [
+      { pref: JANUS_ADBLOCK_ENABLED_PREF, option: 'adblock' },
+      { pref: JANUS_GIF2VIDEO_ENABLED_PREF, option: 'gif2video' }
+    ];
 
-    if (Preferences.get(JANUS_GIF2VIDEO_ENABLED_PREF, false)) {
-      this.header += "+gif2video ";
-    }
+    features.forEach((feature) => {
+      this.header += (Preferences.get(feature.pref, false) ? "+" +
+        feature.option : "-" + feature.option) + " ";
+    });
   },
 
   applyPrefChanges: function(name) {
