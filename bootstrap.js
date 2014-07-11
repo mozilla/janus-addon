@@ -85,7 +85,8 @@ var ByteTracker = {
       totalIngress: this.totalIngress,
       totalEgress: this.totalEgress,
       totalUnknown: this.totalUnknown,
-      reductionPercentage: Math.round(((this.totalIngress - this.totalEgress) / (this.totalIngress || 1)) * 100)
+      reductionPercentage: Math.round((((this.totalIngress + this.totalUnknown) - (this.totalEgress + this.totalUnknown)) /
+        ((this.totalIngress + this.totalUnknown) || 1)) * 100)
     };
   },
 
@@ -101,8 +102,6 @@ var ByteTracker = {
         // we don't know the original size. Count it as equal on both
         // sides, but keep track of how much of that stuff we get.
         this.totalUnknown += extraSizeData;
-        this.totalIngress += extraSizeData;
-        this.totalEgress += extraSizeData;
       }
     }
   }
