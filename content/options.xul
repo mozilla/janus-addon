@@ -11,6 +11,7 @@
   <setting id="gifwebm-setting" pref="extensions.janus.gif2video.enabled" type="bool" title="Enable GIF -> Video conversion"></setting>
 
   <setting type="control" id="bandwidth-setting" title="Bandwidth Stats">
-    <html:span id="bandwidth-label"></html:span>
+    <html:span id="bytes-label"></html:span><html:br/>
+    <html:span id="reduction-label"></html:span>
   </setting>
 </vbox>

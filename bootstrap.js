@@ -171,13 +171,15 @@ var ProxyAddon = {
       return;
     }
 
-    let bandwidthLabel = doc.getElementById("bandwidth-label");
-
+    let bytesLabel = doc.getElementById("bytes-label");
+    let reductionLabel = doc.getElementById("reduction-label");
     let usage = ByteTracker.getUsages();
 
-    bandwidthLabel.innerHTML = bytesToSize(usage.totalEgress) + " / " +
+    bytesLabel.innerHTML = bytesToSize(usage.totalEgress) + " / " +
       bytesToSize(usage.totalIngress) + " (" + bytesToSize(usage.totalUnknown) +
-      " unknown), reduced by " + usage.reductionPercentage + "%";
+      " unknown)";
+
+    reductionLabel.innerHTML = "reduced by " + usage.reductionPercentage + "%";
   },
 }
 
