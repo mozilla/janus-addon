@@ -9,4 +9,8 @@
 
   <setting id="ad-setting" pref="extensions.janus.adblock.enabled" type="bool" title="Enable ad blocking"></setting>
   <setting id="gifwebm-setting" pref="extensions.janus.gif2video.enabled" type="bool" title="Enable GIF -> Video conversion"></setting>
+
+  <setting type="control" id="bandwidth-setting" title="Bandwidth Stats">
+    <html:span id="bandwidth-label"></html:span>
+  </setting>
 </vbox>

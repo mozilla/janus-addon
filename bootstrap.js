@@ -28,6 +28,11 @@ function isNativeUI() {
 
 var gAndroidMenuId = null;
 
+function bytesToSize(size) {
+    var i = Math.floor( Math.log(size) / Math.log(1024) );
+    return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+};
+
 function setProxyChecked(checked) {
   let windows = Services.wm.getEnumerator("navigator:browser");
   while (windows.hasMoreElements()) {
@@ -43,6 +48,67 @@ function setProxyChecked(checked) {
     }
   }
 }
+
+var ByteTracker = {
+  init: function() {
+    this.totalIngress = 0;
+    this.totalEgress = 0;
+    this.totalUnknown = 0;
+    this.listening = false;
+
+    this.distributor = Cc['@mozilla.org/network/http-activity-distributor;1']
+      .getService(Ci.nsIHttpActivityDistributor);
+  },
+
+  start: function() {
+    if (this.listening) {
+      return;
+    }
+
+    this.distributor.addObserver(this);
+    this.listening = true;
+  },
+
+  stop: function() {
+    if (!this.listening) {
+      return;
+    }
+
+    try {
+      this.distributor.removeObserver(this);
+      this.listening = false;
+    } catch(e) {}
+  },
+
+  getUsages: function() {
+    return {
+      totalIngress: this.totalIngress,
+      totalEgress: this.totalEgress,
+      totalUnknown: this.totalUnknown,
+      reductionPercentage: Math.round(((this.totalIngress - this.totalEgress) / (this.totalIngress || 1)) * 100)
+    };
+  },
+
+  observeActivity: function(channel, type, subtype, timestamp, extraSizeData, extraStringData) {
+    if (type === this.distributor.ACTIVITY_TYPE_HTTP_TRANSACTION &&
+        subtype === this.distributor.ACTIVITY_SUBTYPE_RESPONSE_COMPLETE) {
+
+      try {
+        this.totalIngress += parseInt(channel.getResponseHeader('x-original-content-length'));
+        this.totalEgress += extraSizeData;
+      } catch(e) {
+        // No x-original-content-length header for whatever reason, so
+        // we don't know the original size. Count it as equal on both
+        // sides, but keep track of how much of that stuff we get.
+        this.totalUnknown += extraSizeData;
+        this.totalIngress += extraSizeData;
+        this.totalEgress += extraSizeData;
+      }
+    }
+  }
+};
+
+ByteTracker.init();
 
 var ProxyAddon = {
 
@@ -72,10 +138,11 @@ var ProxyAddon = {
         Preferences.set(PROXY_AUTOCONFIG_URL_PREF, Preferences.get(JANUS_PAC_URL_PREF));
         Preferences.set(PROXY_TYPE_PREF, PROXY_TYPE);
         Services.obs.addObserver(ProxyAddon.observe, "http-on-modify-request", false);
+        ByteTracker.start();
       } else {
         Preferences.reset(PROXY_AUTOCONFIG_URL_PREF);
         Preferences.reset(PROXY_TYPE_PREF);
-
+        ByteTracker.stop();
         try {
           Services.obs.removeObserver(ProxyAddon.observe, "http-on-modify-request");
         } catch(e) {}
@@ -98,6 +165,20 @@ var ProxyAddon = {
 
       channel.setRequestHeader("X-Janus-Options", ProxyAddon.header, false);
     }
+  },
+
+  observeAddon: function(doc, topic, id) {
+    if (id != ADDON_ID) {
+      return;
+    }
+
+    let bandwidthLabel = doc.getElementById("bandwidth-label");
+
+    let usage = ByteTracker.getUsages();
+
+    bandwidthLabel.innerHTML = bytesToSize(usage.totalEgress) + " / " +
+      bytesToSize(usage.totalIngress) + " (" + bytesToSize(usage.totalUnknown) +
+      " unknown), reduced by " + usage.reductionPercentage + "%";
   },
 }
 
@@ -181,6 +262,8 @@ function startup(aData, aReason) {
     Preferences.observe(pref, ProxyAddon);
   });
 
+  Services.obs.addObserver(ProxyAddon.observeAddon, AddonManager.OPTIONS_NOTIFICATION_DISPLAYED, false);
+
   // Load into any existing windows
   let windows = Services.wm.getEnumerator("navigator:browser");
   while (windows.hasMoreElements()) {
@@ -201,6 +284,8 @@ function shutdown(aData, aReason) {
   OBSERVE_PREFS.forEach(function(pref) {
     Preferences.ignore(pref, ProxyAddon);
   });
+
+  Services.obs.removeObserver(ProxyAddon.observeAddon, AddonManager.OPTIONS_NOTIFICATION_DISPLAYED);
 
   // Put proxy prefs back to defaults
   Preferences.reset(PROXY_AUTOCONFIG_URL_PREF);
