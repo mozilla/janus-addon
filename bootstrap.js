@@ -375,7 +375,7 @@ const OBSERVE_PREFS = [JANUS_ENABLED_PREF, JANUS_PAC_URL_PREF,
 function startup(aData, aReason) {
 
   if (aReason === ADDON_INSTALL) {
-    Preferences.set(JANUS_ENABLED_PREF, false);
+    Preferences.set(JANUS_ENABLED_PREF, true);
     Preferences.set(JANUS_PAC_URL_PREF, DEFAULT_PROXY_URL);
   }
 
