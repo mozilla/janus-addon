@@ -12,6 +12,7 @@
 
   <setting type="control" id="bandwidth-setting" title="Bandwidth Stats">
     <html:span id="bytes-label"></html:span><html:br/>
-    <html:span id="reduction-label"></html:span>
+    <html:span id="reduction-label"></html:span><html:br/>
+    <html:button id="reset-button"></html:button>
   </setting>
 </vbox>
