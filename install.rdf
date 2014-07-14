@@ -6,7 +6,7 @@
         <em:type>2</em:type>
         <em:optionsURL>chrome://janus/content/options.xul</em:optionsURL>
         <em:optionsType>2</em:optionsType>
-        <em:name>Proxy Configurator</em:name>
+        <em:name>Janus Proxy Configurator</em:name>
         <em:version>1.1</em:version>
         <em:bootstrap>true</em:bootstrap>
         <em:description>Configure your browser to use a SPDY proxy</em:description>
