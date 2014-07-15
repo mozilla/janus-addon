@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <setting id="enable-setting" pref="extensions.janus.enabled" type="bool" title="Enable Janus Proxy"></setting>
+
+  <setting id="url-setting" pref="extensions.janus.pac_url" type="string" title="PAC URL"></setting>
+
+  <setting id="ad-setting" pref="extensions.janus.adblock.enabled" type="bool" title="Enable ad blocking"></setting>
+  <setting id="gifwebm-setting" pref="extensions.janus.gif2video.enabled" type="bool" title="Enable GIF -> Video conversion"></setting>
+
+  <setting type="control" id="bandwidth-setting" title="Bandwidth Stats">
+    <html:span id="bytes-label"></html:span><html:br/>
+    <html:span id="reduction-label"></html:span><html:br/>
+    <html:button id="reset-button"></html:button>
+  </setting>
+</vbox>

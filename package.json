@@ -1,0 +1,10 @@
+{
+  "name": "janus",
+  "title": "Janus Proxy Configurator",
+  "id": "janus@mozilla.org",
+  "description": "Configure your browser to use the Janus SPDY/HTTP2 proxy",
+  "author": "James Willcox <jwillcox@mozilla.com>",
+  "icon": "data/janus.png",
+  "license": "MPL 2.0",
+  "version": "1.2"
+}
