@@ -9,7 +9,7 @@
 
   <setting id="ad-setting" pref="extensions.janus.adblock.enabled" type="bool" title="Enable ad blocking"></setting>
   <setting id="gifwebm-setting" pref="extensions.janus.gif2video.enabled" type="bool" title="Enable GIF -> Video conversion"></setting>
-  <setting id="fork-setting" pref="extensions.janus.fork.enabled" type="bool" title="Always try to optimize bandwidth usage"></setting>
+  <setting id="fork-setting" pref="extensions.janus.fork.disabled" type="bool" title="Always try to optimize bandwidth usage"></setting>
 
   <setting type="control" id="bandwidth-setting" title="Bandwidth Stats">
     <html:span id="bytes-proxied-label"></html:span><html:br/>
