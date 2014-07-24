@@ -11,7 +11,7 @@
     .main-container {
       margin-left: auto;
       margin-right: auto;
-      width: 220px;
+      width: 250px;
     }
 
     .usage-container {
@@ -29,11 +29,15 @@
       <label for="enabled-checkbox">Enable Janus Proxy</label><br>
 
       <table class="usage-container">
-        <tr><td>Traffic In:</td><td class="bold" id="bytes-ingress">0 B</td></tr>
-        <tr><td>Traffic Out:</td><td class="bold" id="bytes-egress">0 B</td></tr>
+        <tr><td>Proxy Traffic In:</td><td class="bold" id="bytes-ingress">0 B</td></tr>
+        <tr><td>Proxy Traffic Out:</td><td class="bold" id="bytes-egress">0 B</td></tr>
         <tr><td>Non-proxy Traffic:</td><td class="bold" id="bytes-unknown">0 B</td></tr>
-        <tr><td>Bandwidth Savings:</td><td class="bold" id="reduction-percentage">0%</td></tr>
-        <tr rowspan="2"><td><button type="button" id="reset-button">Reset</button></td></tr>
+        <tr><td>Proxied Bandwidth Savings:</td><td class="bold" id="reduction-proxied">0%</td></tr>
+        <tr><td>Overall Bandwidth Savings:</td><td class="bold" id="reduction-overall">0 B</td></tr>
+        <tr rowspan="2"><td>
+          <button type="button" id="reset-button">Reset Stats</button>
+          <button type="button" id="options-button">Options</button>
+        </td></tr>
       </table>
     </div>
 

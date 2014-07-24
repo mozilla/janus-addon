@@ -1,10 +1,10 @@
 
 addon.port.on('usage', function(usage) {
-  console.log("updating usages");
   document.getElementById('bytes-ingress').innerHTML = usage.totalIngress;
   document.getElementById('bytes-egress').innerHTML = usage.totalEgress;
   document.getElementById('bytes-unknown').innerHTML = usage.totalUnknown;
-  document.getElementById('reduction-percentage').innerHTML = usage.reductionPercentage;
+  document.getElementById('reduction-proxied').innerHTML = usage.reductionProxied;
+  document.getElementById('reduction-overall').innerHTML = usage.reductionOverall;
 });
 
 var enabledCheckbox = document.getElementById('enabled-checkbox');
@@ -19,4 +19,8 @@ enabledCheckbox.addEventListener("click", function() {
 
 document.getElementById('reset-button').addEventListener('click', function() {
   addon.port.emit("reset");
+});
+
+document.getElementById('options-button').addEventListener('click', function() {
+  addon.port.emit("options");
 });
