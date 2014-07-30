@@ -24,3 +24,7 @@ document.getElementById('reset-button').addEventListener('click', function() {
 document.getElementById('options-button').addEventListener('click', function() {
   addon.port.emit("options");
 });
+
+document.getElementById('report-bug-button').addEventListener('click', function() {
+  addon.port.emit("report-bug");
+});

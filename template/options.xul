@@ -17,5 +17,6 @@
     <html:span id="reduction-proxied-label"></html:span><html:br/>
     <html:span id="reduction-overall-label"></html:span><html:br/>
     <html:button id="reset-button"></html:button>
+    <html:button id="report-bug-button"></html:button>
   </setting>
 </vbox>

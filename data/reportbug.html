@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <style>
+    body {
+      margin-top: 1em;
+    }
+    </style>
+  </head>
+  <body>
+  <div class="container">
+    <div class="col-md-offset-4 col-md-4">
+      <h2>Report Janus Problem</h2>
+      <p>Are you having problems that you think might be related to the Janus proxy? Let us know!</p>
+      <form id="bug-report-form" role="form">
+        <div class="form-group">
+          <label for="name-input">Full name</label>
+          <input type="text" class="form-control" id="name-input" placeholder="Enter full name (optional)">
+        </div>
+        <div class="form-group">
+          <label for="email-input">Email address</label>
+          <input type="email" class="form-control" id="email-input" placeholder="Enter email (optional)">
+        </div>
+        <div class="form-group">
+          <label for="url-input">URL</label>
+          <input type="url" class="form-control" id="url-input" placeholder="Enter URL where problem occurred (required)" required>
+        </div>
+        <div class="form-group">
+          <label for="description-text">Description</label>
+          <textarea id="description-text" class="form-control" rows="3"></textarea>
+        </div>
+        <button id="submit-button" type="submit" class="btn btn-default">Submit</button>
+      </form>
+    </div>
+  </div>
+  </body>
+</html>
