@@ -4,7 +4,10 @@
   "id": "janus@mozilla.org",
   "description": "Configure your browser to use the Janus SPDY/HTTP2 proxy",
   "author": "James Willcox <jwillcox@mozilla.com>",
+  "contributors": [
+    "Eugen Sawin <esawin@mozilla.com>"
+  ],
   "icon": "data/janus.png",
   "license": "MPL 2.0",
-  "version": "1.3.1"
+  "version": "1.4.0"
 }
